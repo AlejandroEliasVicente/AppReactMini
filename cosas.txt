@@ -1,0 +1,102 @@
+  const [todo, setTodo] = useState({});
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const fetchTodo = async () => {
+      try {
+        const response = await fetch('/tarea/1');
+        const data = await response.json();
+        if (!data.error) {
+          setTodo(data.data);
+        } else {
+          setError(true);
+        }
+      } catch (error) {
+        setError(true);
+      }
+    };
+    fetchTodo();
+  }, []);
+
+
+{error ? (
+        <div>Error al cargar la tarea</div>
+      ) : (
+        <div>
+          <h1>Título de la tarea: {todo.title}</h1>
+          <p>Completada: {todo.isCompleted ? 'Sí' : 'No'}</p>
+        </div>
+      )}
+
+
+
+
+
+
+      import React, { useState } from 'react';
+
+function App() {
+  const [elementos, setElementos] = useState([]);
+
+  const handleSubmit = (datos) => {
+    fetch('/api/nuevoElemento', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(datos)
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Extraer los datos de la respuesta
+      const nuevoElemento = {
+        id: data.id,
+        nombre: data.nombre,
+        descripcion: data.descripcion
+      };
+      
+      // Actualizar el estado de la aplicación con los nuevos datos
+      setElementos([...elementos, nuevoElemento]);
+    })
+    .catch(error => console.error(error));
+  }
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    const datos = { nombre: e.target.nombre.value, descripcion: e.target.descripcion.value };
+    handleSubmit(datos);
+    e.target.reset();
+  }
+
+  return (
+    <div>
+      <h1>Mi aplicación</h1>
+      <form onSubmit={handleFormSubmit}>
+        <input type="text" name="nombre" placeholder="Nombre" />
+        <textarea name="descripcion" placeholder="Descripción"></textarea>
+        <button type="submit">Agregar</button>
+      </form>
+      <ul>
+        {elementos.map(elemento => (
+          <li key={elemento.id}>
+            <h2>{elemento.nombre}</h2>
+            <p>{elemento.descripcion}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;
+
+--------------------------------------
+
+redux: para manegar el estado de la app en estado global, ayuda cuando hay muchos niveles
+
+
+PS A:\Wazuh\Node+ReactPrimeraApp> cd .\server\
+PS A:\Wazuh\Node+ReactPrimeraApp\server> npm run dev
+
+PS A:\Wazuh\Node+ReactPrimeraApp> cd .\client\
+PS A:\Wazuh\Node+ReactPrimeraApp\client> npm start
